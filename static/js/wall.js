@@ -2,10 +2,24 @@ $(document).ready(function () {
     // Normally, JavaScript runs code at the time that the <script>
     // tags loads the JS. By putting this inside a jQuery $(document).ready()
     // function, this code only gets run when the document finishing loading.
-    getMessages();
-    $("#message-form").submit(handleFormSubmit);
 
-    // $("#message-container").load("/api/wall/list");
+    $("#message-form").submit(handleFormSubmit);
+    getMessages();
+
+    // Handle clicks on the Clear button to clear the messages
+    $("#clearButton").click(
+        function (evt)
+        {
+            $.get(
+                "/api/wall/clear",
+                function(result)
+                {
+                   displayMessages(result);
+                }
+            );
+        }
+    );
+
 });
 
 
@@ -26,6 +40,7 @@ function handleFormSubmit(evt) {
 }
 
 
+
 /**
  * Makes AJAX call to the server and the message to it.
  */
@@ -36,33 +51,40 @@ function addMessage(msg) {
         function (data) {
             console.log("addMessage: ", data);
             displayResultStatus(data.result);
-            getMessages();
+            displayMessages(data);
+
+            // Disable submit button for 5 seconds after message is added
+            $("#message-send").prop("disabled", true);
+            setTimeout(function () {
+                $("#message-send").prop("disabled", false);
+            }, 5000);
+           
         }
     );
+}
 
+function displayMessages(result)
+{
+    console.log("getMessages: ", result);
 
+    $("#message-container").empty();
 
+    messages = result["messages"];  // session["wall"]
+    for (var index in messages)
+    {
+        message_object = messages[index]; // get each dictionary object
+        message = message_object["message"]; // get the actual message
+        $("#message-container").prepend('<li class="list-group-item">' + message + "</li>");
+    }
 }
 
 function getMessages() {
     $.get(
         "/api/wall/list",
         function(result) {
-            // alert("I got messages");
-            // $("#message-container").text(result.messages);
-            $("#message-container").empty();
-
-            messages = result["messages"];  // session["wall"]
-            // alert(messages);
-            for (var index in messages)
-            {
-                // alert(message_object)
-                message_object = messages[index];
-                message = message_object["message"];
-                $("#message-container").append('<li class="list-group-item">' + message + "</li>");
-            }
+           displayMessages(result);
         }
-        );
+    );
 }
 
 
