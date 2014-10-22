@@ -14,8 +14,10 @@ $(document).ready(function () {
                 "/api/wall/clear",
                 function(result)
                 {
-                   displayMessages(result);
+                    displayMessages(result);
+                    displayResultStatus(result.result, true);
                 }
+                
             );
         }
     );
@@ -45,12 +47,18 @@ function handleFormSubmit(evt) {
  * Makes AJAX call to the server and the message to it.
  */
 function addMessage(msg) {
+    // console.log(msg);
+    // alert(typeof(msg));
+
+    // remove html tags from message
+    msg = $("<div>" + msg + "</div>").text();
+
     $.post(
         "/api/wall/add",
         {'m': msg},
         function (data) {
             console.log("addMessage: ", data);
-            displayResultStatus(data.result);
+            displayResultStatus(data.result, false);
             displayMessages(data);
 
             // Disable submit button for 5 seconds after message is added
@@ -92,7 +100,17 @@ function getMessages() {
  * This is a helper function that does nothing but show a section of the
  * site (the message result) and then hide it a moment later.
  */
-function displayResultStatus(resultMsg) {
+function displayResultStatus(resultMsg, clearMessages) {
+    // change color of message depending on user action
+    if (clearMessages)
+    {
+        $("#sent-result").addClass("alert alert-danger");
+    }
+    else
+    {
+        $("#sent-result").removeClass("alert alert-danger");
+        $("#sent-result").addClass("alert alert-info");
+    }
     var notificationArea = $("#sent-result");
     notificationArea.text(resultMsg);
     notificationArea.slideDown(function () {
