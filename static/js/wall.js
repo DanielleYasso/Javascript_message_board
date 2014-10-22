@@ -1,4 +1,5 @@
-$(document).ready(function () {
+$(document).ready(function () 
+{
     // Normally, JavaScript runs code at the time that the <script>
     // tags loads the JS. By putting this inside a jQuery $(document).ready()
     // function, this code only gets run when the document finishing loading.
@@ -28,7 +29,8 @@ $(document).ready(function () {
 /**
  * Handle submission of the form.
  */
-function handleFormSubmit(evt) {
+function handleFormSubmit(evt) 
+{
     evt.preventDefault();
 
     var textArea = $("#message");
@@ -46,9 +48,8 @@ function handleFormSubmit(evt) {
 /**
  * Makes AJAX call to the server and the message to it.
  */
-function addMessage(msg) {
-    // console.log(msg);
-    // alert(typeof(msg));
+function addMessage(msg) 
+{
 
     // remove html tags from message
     msg = $("<div>" + msg + "</div>").text();
@@ -56,14 +57,18 @@ function addMessage(msg) {
     $.post(
         "/api/wall/add",
         {'m': msg},
-        function (data) {
-            console.log("addMessage: ", data);
-            displayResultStatus(data.result, false);
-            displayMessages(data);
+        function (resultMessage) 
+        {
+            // console.log("addMessage: ", result_message);
+            displayResultStatus(resultMessage, false);
+
+            // display new message on webpage
+            displayNewMessage(msg);
 
             // Disable submit button for 5 seconds after message is added
             $("#message-send").prop("disabled", true);
-            setTimeout(function () {
+            setTimeout(function () 
+            {
                 $("#message-send").prop("disabled", false);
             }, 5000);
            
@@ -71,6 +76,13 @@ function addMessage(msg) {
     );
 }
 
+// adds newest message in the message list to html list of displayed messages
+function displayNewMessage(msg)
+{
+    $("#message-container").prepend('<li class="list-group-item">' + msg + "</li>");
+}
+
+// receives and displays all the messages in the message list
 function displayMessages(result)
 {
     console.log("getMessages: ", result);
@@ -82,14 +94,18 @@ function displayMessages(result)
     {
         message_object = messages[index]; // get each dictionary object
         message = message_object["message"]; // get the actual message
-        $("#message-container").prepend('<li class="list-group-item">' + message + "</li>");
+        
+        displayNewMessage(message)
     }
 }
 
-function getMessages() {
+// Gets all messages from session and sends to displayMessages
+function getMessages() 
+{
     $.get(
         "/api/wall/list",
-        function(result) {
+        function(result) 
+        {
            displayMessages(result);
         }
     );
@@ -100,20 +116,21 @@ function getMessages() {
  * This is a helper function that does nothing but show a section of the
  * site (the message result) and then hide it a moment later.
  */
-function displayResultStatus(resultMsg, clearMessages) {
+function displayResultStatus(resultMsg, clearMessages) 
+{
     // change color of message depending on user action
     if (clearMessages)
     {
-        $("#sent-result").addClass("alert alert-danger");
+        $("#sent-result").removeClass("alert-info").addClass("alert-danger");
     }
     else
     {
-        $("#sent-result").removeClass("alert alert-danger");
-        $("#sent-result").addClass("alert alert-info");
+        $("#sent-result").removeClass("alert-danger").addClass("alert-info");;
     }
     var notificationArea = $("#sent-result");
     notificationArea.text(resultMsg);
-    notificationArea.slideDown(function () {
+    notificationArea.slideDown(function () 
+    {
         // In JavaScript, "this" is a keyword that means "the object this
         // method or function is called on"; it is analogous to Python's
         // "self". In our case, "this" is the #sent-results element, which
@@ -130,7 +147,8 @@ function displayResultStatus(resultMsg, clearMessages) {
         // many JS programmers use the name "self"; some others use "that".
         var self = this;
 
-        setTimeout(function () {
+        setTimeout(function () 
+        {
             $(self).slideUp();
         }, 2000);
     });

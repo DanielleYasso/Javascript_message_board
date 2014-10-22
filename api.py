@@ -55,10 +55,10 @@ def wall_add(msg):
 
     session.setdefault('wall', []).append(wall_dict)
 
-    result = wall_list()
-    result["result"] = "Message Received"
-
-    return result
+    # result = wall_list()
+    # result["result"] = "Message Received"
+    
+    return "Message Received"
 
 def wall_clear():
     """ Clear all messages from the wall """

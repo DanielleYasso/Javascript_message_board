@@ -70,7 +70,7 @@ def add_message():
         result = wall_error("Your message is empty")
 
     else:
-        result = wall_add(msg)
+        result = wall_add(msg) # adds msg to session, returns "Message Received" string
 
     return _convert_to_JSON(result)
 
